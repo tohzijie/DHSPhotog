@@ -26,7 +26,7 @@ class Contact(db.Expando):
 	tel1=db.StringProperty(required=False)
 	lens=db.StringProperty(required=True)
 	remark = db.TextProperty()
-	date = db.DateTimeProperty(auto_now_add = True)
+	date = db.DateTimeProperty(auto_now_add = True)        
 
 class MainHandler(webapp2.RequestHandler):
 	''' Home page handler '''
@@ -47,7 +47,7 @@ class MainHandler(webapp2.RequestHandler):
 			result = query.fetch(1)
 			if result:	# if user record found
 				contact = result[0]
-				greeting = ("Welcome %s!" % (contact.name,))
+				greeting = ("Hello %s! Not you? Please " % (contact.name,))
 			else:		# not found
 				contact = "Invalid dhs.sg user"
 				greeting = "You are not authorise to loan"
@@ -177,7 +177,7 @@ class about(webapp2.RequestHandler):
 <p>This app is proudly borught to you by </p>
 <h1> <font color="#FF0000">TOH ZI JIE</font></h1>
 <p>Class: 5C23 </p>
-<p>Email: toh.zijie@dhs.sg  </p>
+<p>Email: <a href="mailto:"toh.zijie@dhs.sg">toh.zijie@dhs.sg </a> </p>
 <p align="right">&copy;TZJ</p>
 </font>
 </body>
