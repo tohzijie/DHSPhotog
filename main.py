@@ -87,17 +87,25 @@ class UpdateHandler(webapp2.RequestHandler):
 			user = users.get_current_user()
 			query = Contact.gql('WHERE pid = :1', user.nickname())
 			result = query.fetch(1)
-			if result:	# user found, update
-				contact = result[0]
+                        contact=result[0]
+			if result and updated_nric==str(contact.nric1) and updated_tel==str(contact.tel1):	# user found, update
+#				contact = result[0]
 				contact.remark = db.Text(updated_remark)
 				contact.nric = updated_nric
 				contact.camera = updated_camera
 				contact.lens = updated_lens
 				contact.put()
+				self.response.write('''<!DOCTYPE html><html><head> Your request has been saved. Thank you!</head><body>
+<form method="LINK" action="/">
+<input type="submit" value="Home">
+</form></html>''')
 			else:		# user not found, error
-				self.response.out.write('Update failed!')
+				self.response.out.write('''<!DOCTYPE html><html><head>Update failed! Failed to verify user. Please try again.</head>
+                                                        <body><form method="LINK" action="/contact"><input type="submit" value="Back">
+</form></html>''')
+				return
 		# go back to home page	
-		self.redirect('/')
+#		self.redirect('/')
 
 class Greeting(db.Model):
         """Models an individual Guestbook entry with an author, content, and date."""
