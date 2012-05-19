@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>DHShoot!</title>
+	</head>
+	<body bgcolor= black font=white>  
+
+		<h2><align = "left"><font color = white>{{ greeting }} <a href="{{ url }}">{{ url_linktext }}</a></h2>
+		{% if contact %} </font>
+
+<div align = "center">
+ <h1><!--form name="entry" action="http://people.dhs.sg/tohzijie/DHShoot" method="get"-->
+ <!--a class="text-glow" href="#" onClick="document.entry.submit()"--><font color="#990033">DHShoot!</font><!--/a>
+ </form--></h1>
+ </div>
+
+<div align = "center">
+<img style="width: 300px; height: inherit;" src="static/camera.jpg" alt="DHShoot" align="center" /> 
+</div>
+
+
+
+<form method="LINK" action="/contact" align="center">
+<input type="submit" value="Loaning of equiment">
+</form>
+<form method = "Link" action="/GuestMain" align="center">
+<input type = submit value = "General Updates/Discussion">
+</form>
+<p align="right">
+<a href="/about" style="color: white">About</a>
+</p>
+<p align="right"><font color = white>
+&copy;TZJ
+</p></font>
+
+		{% else %}
+			<p>You need to sign in.</p>
+		{% endif %}
+</body>
+
+</html>

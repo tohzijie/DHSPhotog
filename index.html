@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>DHShoot!</title>
+		<link rel="stylesheet" href="/static/style.css" />
+		<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+		<script src="/static/prettyComments.js"></script>
+		<script src="/static/date.js"></script>
+		<script src="/static/datePicker.js"></script>
+		<script>
+			$(document).ready(function(){
+				$('textarea').prettyComments();
+				$('.date-pick').datePicker();
+			});
+		</script>
+	</head>
+	<body>
+		<h1>Loaning form</h1>
+		<h2>{{ greeting }} <a href="{{ url }}">{{ url_linktext }}</a></h2>
+		{% if contact %}
+			<form action="/update" method="post">
+				<!--label for="name">Name:</label>
+				<input id="name" name="name" value="{{ contact.name|escape }}" />
+				<<br /><br />>
+				<label for="class1">Class: </label>
+          		<label><input type="text" id="class1" name="class1" placeholder="Your Class"/>{{contact.class|escape}}</label>
+           		<br /><br /--> 
+				<label for="nric">Nric: </label>
+          		<label><input type="text" id="nric" name="nric" placeholder="NRIC for verification" /></label>
+				<br /><br />
+				<!--label for="email">Email:</label>
+				<input id="email" name="email" value="{{ contact.email|escape }}" />		
+				<br /><br /-->
+				<label for = "tel"> Contact number (HP)</label>
+				<label><input type ="tel" id="phone" name="tel" placeholder ="For verification" /></label>
+				<br/><br/>
+			<label for="camera">Camera</label>
+			<label><input type = "radio" name="camera" value = "None" /> None</label>
+            <label><input type="radio" name="camera" value="Nikon D40" />Nikon D40</label>
+			<label><input type="radio" name="camera" value="EOS 550D" />EOS 550D</label>
+			<label><input type="radio" name="camera" value="EOS 500D" />EOS 500D</label>
+            <label><input type="radio" name="camera" value="EOS 60D"/>EOS 60D[A]*</label>
+			<br/><br/>
+						<label for="lens">Lens</label>
+			<select name="lens">
+			   <option value="None">None</option>
+			   <option value="Nikon 18-55 mm">Nikon 18-55mm</option>
+               <option value="Nikon 55-200 mm">Nikon 55-200mm</option>
+			   <option value="Nikon 105mm f/2.8">Nikon 105mm f/2.8/option>
+			   <option value="Nikon Fisheye">Nikon 18-55</option>
+			   <option value="Nikkor 60mm f/2.8">Nikkor 60mm f/2.8</option>
+			   <option value="Tamron 180mm f/3.5 for Nikon">Tamron 180mm f/3.5 for Nikon</option>
+               <option value="Canon18-55mm">Canon 18-55mm[A]</option>
+			   <option value="Canon 18-135mm">Canon 18-135mm</option>
+			   <option value="Canon 18-200mm">Canon 18-200mm[A]</option>
+			   <option value="Canon 75-300mm">Canon 75-300mm[A]</option>
+			   <option value="Canon EF 85mm F1.8">Canon EF 85mm F1.8 [A]*</option>
+               <option value="Canon EF 70-200mm F4">Canon EF 70-200mm F4 [A]*</option>
+               <option value="Tamron 90mm f/2.8">Tamron 90mm f/2.8 [A]*</option>
+			   <option value="Nikon-Canon Lens Adaptor">Nikon-Canon Lens Adaptor</option>
+			   </select>
+			   <br/><br/>
+			
+			<!--label for="addeq">Additional equipments</label>
+			<input type="checkbox" name="addeq" value="Flash" /> Flash (state the model in Remarks)
+			<input type="checkbox" name="addeq" value="Tripod" /> Tripod
+			<br/><br/>-->
+			
+				<label for="remark">Remark:</label>
+				<textarea id="remark" name="remark" col="30" row="5" placeholder = "Add. equip? eg. Flash(model no.), Tripod">{{ contact.remark|escape }}</textarea>
+				<input type="submit" id="update" name="update" value="Shoot!">
+				<p><h5>* Requires special permission granted by Ms Teh<br>
+					   [A] Art department</h5></p>
+
+			</form>
+			<p align = "left"> &copy; TZJ</p>
+		{% else %}
+			<p>You need to sign in.</p>
+		{% endif %}
+	</body>
+</html>

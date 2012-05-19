@@ -5,6 +5,9 @@ import jinja2	# template engine
 import os		# access file system
 from google.appengine.api import users	# Google account authentication
 from google.appengine.ext import db		# datastore
+import cgi
+import datetime
+import urllib
 
 # initialize template
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -14,9 +17,16 @@ class Contact(db.Expando):
 	''' User data model '''
 	pid = db.StringProperty(required=True)
 	name = db.StringProperty(required=True)
+	class1 =db.StringProperty(required=True)
 	email = db.EmailProperty(required=True)
 	nric = db.StringProperty(required=True)
+	nric1=db.StringProperty(required=False)
+	camera=db.StringProperty(required=False)
+	tel = db.StringProperty(required=True)
+	tel1=db.StringProperty(required=False)
+	lens=db.StringProperty(required=True)
 	remark = db.TextProperty()
+	date = db.DateTimeProperty(auto_now_add = True)
 
 class MainHandler(webapp2.RequestHandler):
 	''' Home page handler '''
@@ -40,7 +50,7 @@ class MainHandler(webapp2.RequestHandler):
 				greeting = ("Welcome %s!" % (contact.name,))
 			else:		# not found
 				contact = "Invalid dhs.sg user"
-				greeting = "Try again"
+				greeting = "You are not authorise to loan"
 			
 		else: 		# not logged in
 			# login link
@@ -68,29 +78,110 @@ class UpdateHandler(webapp2.RequestHandler):
 	def post(self):
 		if self.request.get('update'):
 			# get data from form controls
-			updated_name = self.request.get('name')
-			updated_email = self.request.get('email')
 			updated_remark = self.request.get('remark')
 			updated_nric = self.request.get('nric')
+			updated_camera=self.request.get('camera')
+			updated_lens=self.request.get('lens')
+			updated_tel=self.request.get('tel')
 			# get user to update
 			user = users.get_current_user()
 			query = Contact.gql('WHERE pid = :1', user.nickname())
 			result = query.fetch(1)
 			if result:	# user found, update
 				contact = result[0]
-				contact.name = updated_name
-				contact.email = updated_email
 				contact.remark = db.Text(updated_remark)
 				contact.nric = updated_nric
+				contact.camera = updated_camera
+				contact.lens = updated_lens
 				contact.put()
 			else:		# user not found, error
 				self.response.out.write('Update failed!')
 		# go back to home page	
 		self.redirect('/')
 
+class Greeting(db.Model):
+        """Models an individual Guestbook entry with an author, content, and date."""
+        author = db.UserProperty()
+        content = db.StringProperty(multiline=True)
+        date = db.DateTimeProperty(auto_now_add=True)
+
+
+
+def guestbook_key(guestbook_name=None):
+          return db.Key.from_path('Guestbook', guestbook_name or 'default_guestbook')
+
+class GuestMain(webapp2.RequestHandler):
+        def get(self):
+                user = users.get_current_user()
+                self.response.out.write('<html><head> <form method = "LINK" action="/" align="left"><input type ="submit" value = "Home"></form><body>')
+                guestbook_name=self.request.get('guestbook_name')
+
+    # Ancestor Queries, as shown here, are strongly consistent with the High
+    # Replication Datastore. Queries that span entity groups are eventually
+    # consistent. If we omitted the ancestor from this query there would be a
+    # slight chance that Greeting that had just been written would not show up
+    # in a query.
+                greetings = Greeting.gql("WHERE ANCESTOR IS :1 ORDER BY date DESC LIMIT 10",
+                                        guestbook_key(guestbook_name))
+		for greeting in greetings:
+				if greeting.author:
+						self.response.out.write(
+						'<b>%s</b> wrote:' % greeting.author.nickname())
+				else:
+						self.response.out.write('An anonymous person wrote:')
+				self.response.out.write('<blockquote>%s</blockquote>' %
+										cgi.escape(greeting.content))
+
+		self.response.out.write("""
+		  <form action="/sign?%s" method="post">
+			<div><textarea name="content" rows="3" cols="60"></textarea></div>
+			<div><input type="submit" value="Shoot!"></div>
+		  </form>
+		  <hr>
+		  <form>Secret Code: <input value="%s" name="guestbook_name">
+		  <input type="submit" value="switch"></form>
+		  <p align="right">&copy;TZJ</p>
+		</body>
+	  </html>""" % (urllib.urlencode({'guestbook_name': guestbook_name}),
+						  cgi.escape(guestbook_name)))
+
+class Guestbook(webapp2.RequestHandler):
+        def post(self):
+                guestbook_name = self.request.get('guestbook_name')
+                greeting = Greeting(parent=guestbook_key(guestbook_name))
+                if users.get_current_user():
+                        greeting.author = users.get_current_user()
+
+                greeting.content = self.request.get('content')
+                greeting.put()
+                self.redirect('/GuestMain?' + urllib.urlencode({'guestbook_name': guestbook_name}))
+
+class about(webapp2.RequestHandler):
+        def get(self):
+		self.response.out.write('''
+                                <!Doctype HTML><html>
+<head>
+<meta charset="UTF-8">
+</head>
+<body bgcolor=black>
+<font color="white"><u><h1>About
+</h1></u>
+<p>This app is proudly borught to you by </p>
+<h1> <font color="#FF0000">TOH ZI JIE</font></h1>
+<p>Class: 5C23 </p>
+<p>Email: toh.zijie@dhs.sg  </p>
+<p align="right">&copy;TZJ</p>
+</font>
+</body>
+</html>''')
+
+
+                
+
+
 class layout(webapp2.RequestHandler):
         '''layout page'''
-	def get(self):
+        def get(self):
 		''' Show home page '''
         # check if valid Google account
 		user = users.get_current_user()
@@ -109,7 +200,7 @@ class layout(webapp2.RequestHandler):
 				greeting = ("Welcome %s!" % (contact.name,))
 			else:		# not found
 				contact = "Invalid dhs.sg user"
-				greeting = "Invalid"
+				greeting = "You are not authorise to loan"
 			
 		else: 		# not logged in
 			# login link
@@ -123,8 +214,9 @@ class layout(webapp2.RequestHandler):
 			'contact': contact,
 			'greeting': greeting,
 			'url': url,
-			'url_li nktext': url_linktext
+			'url_linktext': url_linktext
 		}
+		
 		
 		# create index.html template
 		template = jinja_environment.get_template('layout.html')
@@ -132,9 +224,9 @@ class layout(webapp2.RequestHandler):
 		self.response.out.write(template.render(template_values))
 		
 # main
- #               contact1 = Contact(pid='toh.zijie', name='Toh Zi Jie', email='toh.zijie@dhs.sg', nric = 'S1234567D', remark = '')
+#                contact1 = Contact(pid='toh.zijie', name='Toh Zi Jie', email='toh.zijie@dhs.sg', class1="5C23", tel1 ='6123 4567',tel="61234567", camera="None", nric1="S1234567D",nric="S1234567D", lens="None", remark = '')
 #                contact1.put()
-app = webapp2.WSGIApplication([('/contact', MainHandler), ('/', layout), ('/update', UpdateHandler)],
+app = webapp2.WSGIApplication([('/contact', MainHandler), ('/', layout), ('/update', UpdateHandler), ('/about', about),('/GuestMain', GuestMain), ('/sign', Guestbook)],
                               debug=True)
 
 							  
