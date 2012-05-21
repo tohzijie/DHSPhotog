@@ -8,13 +8,10 @@ from google.appengine.ext import db		# datastore
 import cgi
 import datetime
 import urllib
-from google.appengine.api import mail
-
-message = mail.InboundEmailMessage(self.request.body)
-
 
 # initialize template
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+
 
 class Contact(db.Expando):
 	''' User data model '''
@@ -92,7 +89,7 @@ class UpdateHandler(webapp2.RequestHandler):
 			user = users.get_current_user()
 			query = Contact.gql('WHERE pid = :1', user.nickname())
 			result = query.fetch(1)
-			contact=result[0]
+                        contact=result[0]
 			if result and updated_nric==str(contact.nric1) and updated_tel==str(contact.tel1):	# user found, update
 #				contact = result[0]
 				contact.remark = db.Text(updated_remark)
@@ -116,47 +113,22 @@ class UpdateHandler(webapp2.RequestHandler):
 
 class receipt(webapp2.RequestHandler):
         def get(self):
-                user = users.get_current_user()
-                query= Contact.gql('WHERE pid=:1', user.nickname())
-                result = query.fetch(1)
+		user = users.get_current_user()
+		query = Contact.gql('WHERE pid = :1', user.nickname())
+		result = query.fetch(1)
                 contact=result[0]
                 name= contact.name
                 camera=contact.camera
-                lens=contact.lens
-                purpose=contact.purpose
-                remark=contact.remark
-                self.response.out.write('''
+		lens=contact.lens
+		purpose=contact.purpose
+		remark=contact.remark
+		self.response.out.write('''
 			<p>Name:</p>%s
 			<p>Camera:</p>%s
 			<p>Lens:</p>%s
 			<p>Purpose:</p>%s
 			<p>Remark:</p>%s
 			'''%(str(name),str(camera),str(lens),str(purpose),str(remark)))
-
-
-class confirm(webapp.RequestHandler):
-        def post(self):
-                user = users.get_current_user()
-                query = Contact.gql('WHERE pid = :1', user.nickname())
-                result=query.fetch(1)
-                contact=result[0]
-                user_address = contact.email
-
-                #if not mail.is_email_valid(user_address):
-            # prompt user to enter a valid address
-
-                #else:
- #                       confirmation_url = createNewUserConfirmation(self.request)
-                sender_address = "DHShoot! <toh.zijie@dhs.sg>"
-                subject = "Confirm your loaning"
-                body = '''
-			<p>Name:</p>%s
-			<p>Camera:</p>%s
-			<p>Lens:</p>%s
-			<p>Purpose:</p>%s
-			<p>Remark:</p>%s
-			''' %(str(name),str(camera),str(lens),str(purpose),str(remark)))
-                mail.send_mail(sender_address, user_address, subject, body)
 
 class Greeting(db.Model):
         """Models an individual Guestbook entry with an author, content, and date."""
@@ -287,7 +259,7 @@ class layout(webapp2.RequestHandler):
 #                contact1.put()
 #                contact2=Contact(pid='lim.ahseng', name='Lim Ah Seng', purpose='Nil', email='lim.ahseng@dhs.sg', class1="5C99", tel1='61234567', tel='61234567', camera="None", nric1="S1234567D",nric="S1234567D", lens="None", remark = '')
 #                contact2.put()                 
-app = webapp2.WSGIApplication([('/loan', MainHandler), ('/', layout), ('/update', UpdateHandler), ('/confirm', confirm), ('/receipt', receipt), ('/about', about),('/forum', GuestMain), ('/sign', Guestbook)],
+app = webapp2.WSGIApplication([('/loan', MainHandler), ('/', layout), ('/update', UpdateHandler), ('/receipt', receipt), ('/about', about),('/forum', GuestMain), ('/sign', Guestbook)],
                               debug=True)
 
 							  

@@ -22,6 +22,9 @@ libraries:
   version: "2.5.1"
 - name: jinja2
   version: latest
+  
+inbound_services:
+- mail
 
 builtins:
 - remote_api: on
