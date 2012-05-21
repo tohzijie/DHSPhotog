@@ -123,11 +123,11 @@ class receipt(webapp2.RequestHandler):
 		purpose=contact.purpose
 		remark=contact.remark
 		self.response.out.write('''
-			<h1>Name:</h1>%s
-			<h1>Camera:</h1>%s
-			<h1>Lens:</h1>%s
-			<h1>Purpose:</h1>%s
-			<h1>Remark:</h1>%s
+			<p>Name:</p>%s
+			<p>Camera:</p>%s
+			<p>Lens:</p>%s
+			<p>Purpose:</p>%s
+			<p>Remark:</p>%s
 			'''%(str(name),str(camera),str(lens),str(purpose),str(remark)))
 
 class Greeting(db.Model):
