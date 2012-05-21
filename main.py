@@ -25,6 +25,7 @@ class Contact(db.Expando):
 	tel = db.StringProperty(required=True)
 	tel1=db.StringProperty(required=False)
 	lens=db.StringProperty(required=True)
+	purpose = db.StringProperty(required=True)
 	remark = db.TextProperty()
 	date = db.DateTimeProperty(auto_now_add = True)        
 
@@ -83,6 +84,7 @@ class UpdateHandler(webapp2.RequestHandler):
 			updated_camera=self.request.get('camera')
 			updated_lens=self.request.get('lens')
 			updated_tel=self.request.get('tel')
+			updated_purpose=self.request.get('purpose')
 			# get user to update
 			user = users.get_current_user()
 			query = Contact.gql('WHERE pid = :1', user.nickname())
@@ -93,6 +95,7 @@ class UpdateHandler(webapp2.RequestHandler):
 				contact.remark = db.Text(updated_remark)
 				contact.nric = updated_nric
 				contact.camera = updated_camera
+				contact.purpose=updated_purpose
 				contact.lens = updated_lens
 				contact.put()
 				self.response.write('''<!DOCTYPE html><html><head> Your request has been saved. Thank you!</head><body>
@@ -100,8 +103,8 @@ class UpdateHandler(webapp2.RequestHandler):
 <input type="submit" value="Home">
 </form></html>''')
 			else:		# user not found, error
-				self.response.out.write('''<!DOCTYPE html><html><head>Update failed! Failed to verify user. Please try again.</head>
-                                                        <body><form method="LINK" action="/contact"><input type="submit" value="Back">
+				self.response.out.write('''<!DOCTYPE html><html><head>Update failed! Please try again.</head>
+                                                        <body><form method="LINK" action="/loan"><input type="submit" value="Back">
 </form></html>''')
 				return
 		# go back to home page	
@@ -151,7 +154,7 @@ class GuestMain(webapp2.RequestHandler):
 		  <p align="right">&copy;TZJ</p>
 		</body>
 	  </html>""" % (urllib.urlencode({'guestbook_name': guestbook_name}),
-						  cgi.escape(guestbook_name)))
+						  cgi.escape(guestbook_name.lower())))
 
 class Guestbook(webapp2.RequestHandler):
         def post(self):
@@ -232,20 +235,13 @@ class layout(webapp2.RequestHandler):
 		self.response.out.write(template.render(template_values))
 		
 # main
-#                contact1 = Contact(pid='toh.zijie', name='Toh Zi Jie', email='toh.zijie@dhs.sg', class1="5C23", tel1 ='6123 4567',tel="61234567", camera="None", nric1="S1234567D",nric="S1234567D", lens="None", remark = '')
+#                contact1 = Contact(pid='toh.zijie', name='Toh Zi Jie', purpose='Nil', email='toh.zijie@dhs.sg', class1="5C23", tel1 ='61234567',tel="61234567", camera="None", nric1="S1234567D",nric="S1234567D", lens="None", remark = '')
 #                contact1.put()
-app = webapp2.WSGIApplication([('/contact', MainHandler), ('/', layout), ('/update', UpdateHandler), ('/about', about),('/GuestMain', GuestMain), ('/sign', Guestbook)],
+#                contact2=Contact(pid='lim.ahseng', name='Lim Ah Seng', purpose='Nil', email='lim.ahseng@dhs.sg', class1="5C99", tel1='61234567', tel='61234567', camera="None", nric1="S1234567D",nric="S1234567D", lens="None", remark = '')
+#                contact2.put()                 
+app = webapp2.WSGIApplication([('/loan', MainHandler), ('/', layout), ('/update', UpdateHandler), ('/about', about),('/forum', GuestMain), ('/sign', Guestbook)],
                               debug=True)
 
-							  
-							  
-							  
-							  
-							  
-							  
-							  
-							  
-							  
 							  
 							  
 							  
