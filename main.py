@@ -119,13 +119,13 @@ class Greeting(db.Model):
 
 
 def guestbook_key(guestbook_name=None):
-          return db.Key.from_path('Guestbook', guestbook_name or 'default_guestbook')
+          return db.Key.from_path('Guestbook', guestbook_name.lower() or 'default_guestbook')
 
 class GuestMain(webapp2.RequestHandler):
         def get(self):
                 user = users.get_current_user()
                 self.response.out.write('<html><head> <form method = "LINK" action="/" align="left"><input type ="submit" value = "Home"></form><body>')
-                guestbook_name=self.request.get('guestbook_name')
+                guestbook_name=self.request.get('guestbook_name'.lower())
 
     # Ancestor Queries, as shown here, are strongly consistent with the High
     # Replication Datastore. Queries that span entity groups are eventually
@@ -133,7 +133,7 @@ class GuestMain(webapp2.RequestHandler):
     # slight chance that Greeting that had just been written would not show up
     # in a query.
                 greetings = Greeting.gql("WHERE ANCESTOR IS :1 ORDER BY date DESC LIMIT 10",
-                                        guestbook_key(guestbook_name))
+                                        guestbook_key(guestbook_name.lower()))
 		for greeting in greetings:
 				if greeting.author:
 						self.response.out.write(
@@ -153,19 +153,19 @@ class GuestMain(webapp2.RequestHandler):
 		  <input type="submit" value="switch"></form>
 		  <p align="right">&copy;TZJ</p>
 		</body>
-	  </html>""" % (urllib.urlencode({'guestbook_name': guestbook_name}),
+	  </html>""" % (urllib.urlencode({'guestbook_name'.lower(): guestbook_name.lower()}),
 						  cgi.escape(guestbook_name.lower())))
 
 class Guestbook(webapp2.RequestHandler):
         def post(self):
-                guestbook_name = self.request.get('guestbook_name')
-                greeting = Greeting(parent=guestbook_key(guestbook_name))
+                guestbook_name = self.request.get('guestbook_name'.lower())
+                greeting = Greeting(parent=guestbook_key(guestbook_name.lower()))
                 if users.get_current_user():
                         greeting.author = users.get_current_user()
 
                 greeting.content = self.request.get('content')
                 greeting.put()
-                self.redirect('/GuestMain?' + urllib.urlencode({'guestbook_name': guestbook_name}))
+                self.redirect('/forum?' + urllib.urlencode({'guestbook_name'.lower(): guestbook_name.lower()}).lower())
 
 class about(webapp2.RequestHandler):
         def get(self):
