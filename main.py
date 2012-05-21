@@ -98,10 +98,11 @@ class UpdateHandler(webapp2.RequestHandler):
 				contact.purpose=updated_purpose
 				contact.lens = updated_lens
 				contact.put()
-				self.response.write('''<!DOCTYPE html><html><head> Your request has been saved. Thank you!</head><body>
-<form method="LINK" action="/">
-<input type="submit" value="Home">
-</form></html>''')
+				self.redirect('/receipt')
+				#self.response.write('''<!DOCTYPE html><html><head> Your request has been saved. Thank you!</head><body>
+#<form method="LINK" action="/">
+#<input type="submit" value="Home">
+#</form></html>''')
 			else:		# user not found, error
 				self.response.out.write('''<!DOCTYPE html><html><head>Update failed! Please try again.</head>
                                                         <body><form method="LINK" action="/loan"><input type="submit" value="Back">
@@ -109,6 +110,25 @@ class UpdateHandler(webapp2.RequestHandler):
 				return
 		# go back to home page	
 #		self.redirect('/')
+
+class receipt(webapp2.RequestHandler):
+        def get(self):
+		user = users.get_current_user()
+		query = Contact.gql('WHERE pid = :1', user.nickname())
+		result = query.fetch(1)
+                contact=result[0]
+                name= contact.name
+                camera=contact.camera
+		lens=contact.lens
+		purpose=contact.purpose
+		remark=contact.remark
+		self.response.out.write('''
+			<h1>Name:</h1>%s
+			<h1>Camera:</h1>%s
+			<h1>Lens:</h1>%s
+			<h1>Purpose:</h1>%s
+			<h1>Remark:</h1>%s
+			'''%(str(name),str(camera),str(lens),str(purpose),str(remark)))
 
 class Greeting(db.Model):
         """Models an individual Guestbook entry with an author, content, and date."""
@@ -239,7 +259,7 @@ class layout(webapp2.RequestHandler):
 #                contact1.put()
 #                contact2=Contact(pid='lim.ahseng', name='Lim Ah Seng', purpose='Nil', email='lim.ahseng@dhs.sg', class1="5C99", tel1='61234567', tel='61234567', camera="None", nric1="S1234567D",nric="S1234567D", lens="None", remark = '')
 #                contact2.put()                 
-app = webapp2.WSGIApplication([('/loan', MainHandler), ('/', layout), ('/update', UpdateHandler), ('/about', about),('/forum', GuestMain), ('/sign', Guestbook)],
+app = webapp2.WSGIApplication([('/loan', MainHandler), ('/', layout), ('/update', UpdateHandler), ('/receipt', receipt), ('/about', about),('/forum', GuestMain), ('/sign', Guestbook)],
                               debug=True)
 
 							  
