@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import webapp2	# web application framework
 import jinja2	# template engine
 import os		# access file system
@@ -10,11 +8,11 @@ import datetime
 import urllib
 from google.appengine.api import mail
 
-message = mail.InboundEmailMessage(self.request.body)
 
 
 # initialize template
-jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
+                                       autoescape=True)
 
 class Contact(db.Expando):
 	''' User data model '''
@@ -22,8 +20,8 @@ class Contact(db.Expando):
 	name = db.StringProperty(required=True)
 	class1 =db.StringProperty(required=True)
 	email = db.EmailProperty(required=True)
-	nric = db.StringProperty(required=True)
-	nric1=db.StringProperty(required=False)
+	#nric = db.StringProperty(required=True)
+	#nric1=db.StringProperty(required=False)
 	camera=db.StringProperty(required=False)
 	tel = db.StringProperty(required=True)
 	tel1=db.StringProperty(required=False)
@@ -34,7 +32,7 @@ class Contact(db.Expando):
 
 class MainHandler(webapp2.RequestHandler):
 	''' Home page handler '''
-	
+
 	def get(self):
 		''' Show home page '''
         # check if valid Google account
@@ -55,7 +53,7 @@ class MainHandler(webapp2.RequestHandler):
 			else:		# not found
 				contact = "Invalid dhs.sg user"
 				greeting = "You are not authorise to loan"
-			
+
 		else: 		# not logged in
 			# login link
 			url = users.create_login_url(self.request.uri)
@@ -63,27 +61,27 @@ class MainHandler(webapp2.RequestHandler):
 			url_linktext = 'login'	
 			contact = "Not authorized"
 			greeting = "You need to"
-		
+
 		template_values = {
 			'contact': contact,
 			'greeting': greeting,
 			'url': url,
 			'url_linktext': url_linktext
 		}
-		
+
 		# create index.html template
 		template = jinja_environment.get_template('index.html')
 		# associate template values with template
 		self.response.out.write(template.render(template_values))
 
-		
+
 class UpdateHandler(webapp2.RequestHandler):
 	''' Update contact '''
 	def post(self):
 		if self.request.get('update'):
 			# get data from form controls
 			updated_remark = self.request.get('remark')
-			updated_nric = self.request.get('nric')
+			#updated_nric = self.request.get('nric')
 			updated_camera=self.request.get('camera')
 			updated_lens=self.request.get('lens')
 			updated_tel=self.request.get('tel')
@@ -93,10 +91,9 @@ class UpdateHandler(webapp2.RequestHandler):
 			query = Contact.gql('WHERE pid = :1', user.nickname())
 			result = query.fetch(1)
 			contact=result[0]
-			if result and updated_nric==str(contact.nric1) and updated_tel==str(contact.tel1):	# user found, update
+			if result and updated_tel==str(contact.tel1):	# user found, update
 #				contact = result[0]
 				contact.remark = db.Text(updated_remark)
-				contact.nric = updated_nric
 				contact.camera = updated_camera
 				contact.purpose=updated_purpose
 				contact.lens = updated_lens
@@ -107,7 +104,7 @@ class UpdateHandler(webapp2.RequestHandler):
 #<input type="submit" value="Home">
 #</form></html>''')
 			else:		# user not found, error
-				self.response.out.write('''<!DOCTYPE html><html><head>Update failed! Please try again.</head>
+				self.response.out.write('''<!DOCTYPE html><html><title>DHShoot!</title><head>Update failed! Please try again.</head>
                                                         <body><form method="LINK" action="/loan"><input type="submit" value="Back">
 </form></html>''')
 				return
@@ -125,21 +122,28 @@ class receipt(webapp2.RequestHandler):
                 lens=contact.lens
                 purpose=contact.purpose
                 remark=contact.remark
-                self.response.out.write('''
-			<p>Name:</p>%s
-			<p>Camera:</p>%s
-			<p>Lens:</p>%s
-			<p>Purpose:</p>%s
-			<p>Remark:</p>%s
+                self.response.out.write('''<!DOCTYPE html><html><title>DHShoot!</title>
+                                                        <body><form method="LINK" action="/"><input type="submit" value="Home">
+			<p>Name: %s </p>
+			<p>Camera: %s</p>
+			<p>Lens: %s</p>
+			<p>Purpose: %s</p>
+			<p>Remark: %s</p>
 			'''%(str(name),str(camera),str(lens),str(purpose),str(remark)))
 
 
-class confirm(webapp.RequestHandler):
+class confirm(webapp2.RequestHandler):
         def post(self):
+                message = mail.InboundEmailMessage(self.request.body)
                 user = users.get_current_user()
                 query = Contact.gql('WHERE pid = :1', user.nickname())
                 result=query.fetch(1)
                 contact=result[0]
+                name= contact.name
+                camera=contact.camera
+                lens=contact.lens
+                purpose=contact.purpose
+                remark=contact.remark
                 user_address = contact.email
 
                 #if not mail.is_email_valid(user_address):
@@ -147,7 +151,7 @@ class confirm(webapp.RequestHandler):
 
                 #else:
  #                       confirmation_url = createNewUserConfirmation(self.request)
-                sender_address = "DHShoot! <toh.zijie@dhs.sg>"
+                sender_address = "%s<%s>" %(name, user_address)
                 subject = "Confirm your loaning"
                 body = '''
 			<p>Name:</p>%s
@@ -155,7 +159,7 @@ class confirm(webapp.RequestHandler):
 			<p>Lens:</p>%s
 			<p>Purpose:</p>%s
 			<p>Remark:</p>%s
-			''' %(str(name),str(camera),str(lens),str(purpose),str(remark)))
+			''' %(str(name),str(camera),str(lens),str(purpose),str(remark))
                 mail.send_mail(sender_address, user_address, subject, body)
 
 class Greeting(db.Model):
@@ -260,7 +264,7 @@ class layout(webapp2.RequestHandler):
 			else:		# not found
 				contact = "Invalid dhs.sg user"
 				greeting = "You are not authorise to loan"
-			
+
 		else: 		# not logged in
 			# login link
 			url = users.create_login_url(self.request.uri)
@@ -268,31 +272,24 @@ class layout(webapp2.RequestHandler):
 			url_linktext = 'login'	
 			contact = "Not authorized"
 			greeting = "You need to"
-		
+
 		template_values = {
 			'contact': contact,
 			'greeting': greeting,
 			'url': url,
 			'url_linktext': url_linktext
 		}
-		
-		
+
+
 		# create index.html template
 		template = jinja_environment.get_template('layout.html')
 		# associate template values with template
 		self.response.out.write(template.render(template_values))
-		
+
 # main
-#                contact1 = Contact(pid='toh.zijie', name='Toh Zi Jie', purpose='Nil', email='toh.zijie@dhs.sg', class1="5C23", tel1 ='61234567',tel="61234567", camera="None", nric1="S1234567D",nric="S1234567D", lens="None", remark = '')
+#                contact1 = Contact(pid='toh.zijie', name='Toh Zi Jie', purpose='Nil', email='toh.zijie@dhs.sg', class1="5C23", tel1 ='12345678',tel="12345678", camera="None", lens="None", remark = '')
 #                contact1.put()
-#                contact2=Contact(pid='lim.ahseng', name='Lim Ah Seng', purpose='Nil', email='lim.ahseng@dhs.sg', class1="5C99", tel1='61234567', tel='61234567', camera="None", nric1="S1234567D",nric="S1234567D", lens="None", remark = '')
+#                contact2=Contact(pid='lim.ahseng', name='Lim Ah Seng', purpose='Nil', email='lim.ahseng@dhs.sg', class1="5C99", tel1='12345678', tel='12345678', camera="None", lens="None", remark = '')
 #                contact2.put()                 
 app = webapp2.WSGIApplication([('/loan', MainHandler), ('/', layout), ('/update', UpdateHandler), ('/confirm', confirm), ('/receipt', receipt), ('/about', about),('/forum', GuestMain), ('/sign', Guestbook)],
                               debug=True)
-
-							  
-							  
-							  
-							  
-							  
-							  

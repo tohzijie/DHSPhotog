@@ -26,17 +26,17 @@
 				<label for="class1">Class: </label>
           		<label><input type="text" id="class1" name="class1" placeholder="Your Class"/>{{contact.class|escape}}</label>
            		<br /><br /--> 
-				<label for="nric">Nric: </label>
-          		<label><input type="text" id="nric" name="nric" placeholder="NRIC for verification" /></label>
+				<!--label for="nric">Nric: </label>
+          		<label><input type="text" id="nric" name="nric" placeholder="NRIC for verification" value = "{{ escape }}"/></label>
 				<br /><br />
-				<!--label for="email">Email:</label>
+				<label for="email">Email:</label>
 				<input id="email" name="email" value="{{ contact.email|escape }}" />		
 				<br /><br /-->
 				<label for = "tel"> Contact number (HP)</label>
-				<label><input type ="tel" id="phone" name="tel" placeholder ="For verification" /></label>
+				<label><input type ="tel" id="phone" name="tel" placeholder ="For verification" value = "{{ escape }}" /></label>
 				<br/><br/>
 				<label for = "purpose"> Purpose: </label>
-				<label><input type ="text" id="purpose" name="purpose" /></label>
+				<label><input type ="text" id="purpose" name="purpose" value = "{{ escape }}" /></label>
 				<br/><br/>
 			<label for="camera">Camera</label>
 			<label><input type = "radio" name="camera" value = "None" /> None</label>
@@ -70,8 +70,8 @@
 			<input type="checkbox" name="addeq" value="Tripod" /> Tripod
 			<br/><br/>-->
 			
-				<label for="remark">Remark:</label>
-				<textarea id="remark" name="remark" col="30" row="5" placeholder = "Add. equip? eg. Flash(model no.), Tripod">{{ contact.remark|escape }}</textarea>
+				<label for="remark">Remark(Add. Equip):</label>
+				<textarea id="remark" name="remark" col="30" row="55" placeholder = "eg. Flash(model no.), Tripod">{{ escape }}</textarea>
 				<input type="submit" id="update" name="update" value="Shoot!">
 				<p><h5>* Requires special permission granted by Ms Teh<br>
 					   [A] Art department</h5></p>
