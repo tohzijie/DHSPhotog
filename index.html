@@ -16,6 +16,7 @@
 		</script>
 	</head>
 	<body>
+	<form method="LINK" action="/"><input type="submit" value="Home">
 		<h1>Loaning form</h1>
 		<h2>{{ greeting }} <a href="{{ url }}">{{ url_linktext }}</a></h2>
 		{% if contact %}
@@ -40,27 +41,27 @@
 				<br/><br/>
 			<label for="camera">Camera</label>
 			<label><input type = "radio" name="camera" value = "None" /> None</label>
-            <label><input type="radio" name="camera" value="Nikon D40" />Nikon D40</label>
-			<label><input type="radio" name="camera" value="EOS 550D" />EOS 550D</label>
-			<label><input type="radio" name="camera" value="EOS 500D" />EOS 500D</label>
-            <label><input type="radio" name="camera" value="EOS 60D"/>EOS 60D[A]*</label>
+            <label><input type="radio" name="camera" value="Nikon D40" />Nikon D40 (10) </label>
+			<label><input type="radio" name="camera" value="EOS 550D" />EOS 550D (2)</label>
+			<label><input type="radio" name="camera" value="EOS 500D" />EOS 500D (1)</label>
+            <label><input type="radio" name="camera" value="EOS 60D"/>EOS 60D[A]* (1)</label>
 			<br/><br/>
 						<label for="lens">Lens</label>
 			<select name="lens">
 			   <option value="None">None</option>
-			   <option value="Nikon 18-55 mm">Nikon 18-55mm</option>
-               <option value="Nikon 55-200 mm">Nikon 55-200mm</option>
-			   <option value="Nikon 105mm f/2.8">Nikon 105mm f/2.8</option>
-			   <option value="Nikon Fisheye">Nikon 18-55</option>
-			   <option value="Nikkor 60mm f/2.8">Nikkor 60mm f/2.8</option>
-			   <option value="Tamron 180mm f/3.5 for Nikon">Tamron 180mm f/3.5 for Nikon</option>
-               <option value="Canon18-55mm">Canon 18-55mm[A]</option>
-			   <option value="Canon 18-135mm">Canon 18-135mm</option>
-			   <option value="Canon 18-200mm">Canon 18-200mm[A]</option>
-			   <option value="Canon 75-300mm">Canon 75-300mm[A]</option>
-			   <option value="Canon EF 85mm F1.8">Canon EF 85mm F1.8 [A]*</option>
-               <option value="Canon EF 70-200mm F4">Canon EF 70-200mm F4 [A]*</option>
-               <option value="Tamron 90mm f/2.8">Tamron 90mm f/2.8 [A]*</option>
+			   <option value="Nikon 18-55 mm">Nikon 18-55mm (10)</option>
+               <option value="Nikon 55-200 mm">Nikon 55-200mm (10)</option>
+			   <option value="Nikon 105mm f/2.8">Nikon 105mm f/2.8 (2)</option>
+			   <option value="Nikon Fisheye 10.5 f/2.8">Nikon Fisheye 10.5 f/2.8 (2)</option>
+			   <option value="Nikkor 60mm f/2.8">Nikkor 60mm f/2.8 (4)</option>
+			   <option value="Tamron 180mm f/3.5 for Nikon">Tamron 180mm f/3.5 for Nikon (3)</option>
+               <option value="Canon18-55mm">Canon 18-55mm[A] (1)</option>
+			   <option value="Canon 18-135mm">Canon 18-135mm (2)</option>
+			   <option value="Canon 18-200mm">Canon 18-200mm[A] (1)</option>
+			   <option value="Canon 75-300mm">Canon 75-300mm[A] (1)</option>
+			   <option value="Canon EF 85mm F1.8">Canon EF 85mm F1.8 [A]* (1)</option>
+               <option value="Canon EF 70-200mm F4">Canon EF 70-200mm F4 [A]* (1)</option>
+               <option value="Tamron 90mm f/2.8">Tamron 90mm f/2.8 [A]* (1)</option>
 			   <option value="Nikon-Canon Lens Adaptor">Nikon-Canon Lens Adaptor</option>
 			   </select>
 			   <br/><br/>
@@ -74,9 +75,20 @@
 				<textarea id="remark" name="remark" col="30" row="55" placeholder = "eg. Flash(model no.), Tripod">{{ escape }}</textarea>
 				<input type="submit" id="update" name="update" value="Shoot!">
 				<p><h5>* Requires special permission granted by Ms Teh<br>
-					   [A] Art department</h5></p>
+					   [A] Art department
+					   (N) Quantity of equipment</h5></p>
+			
+			<font color = "yellow">
+			<p> Records of users</p>
+			</font>
+			{% for d in data %}
+			<font color = "yellow">
+			<div class = "camera"> {{d.name}} borrowed {{d.camera}} + {{d.lens}} + {{d.remark}} for {{d.purpose}}</div>
+			</font>
+			{% endfor %}
+			
+						</form>
 
-			</form>
 			<p align = "left"> &copy; TZJ</p>
 		{% else %}
 			<p>You need to sign in.</p>

@@ -28,7 +28,8 @@ class Contact(db.Expando):
 	lens=db.StringProperty(required=True)
 	purpose = db.StringProperty(required=True)
 	remark = db.TextProperty()
-	date = db.DateTimeProperty(auto_now_add = True)        
+	date = db.DateTimeProperty(auto_now_add = True)
+
 
 class MainHandler(webapp2.RequestHandler):
 	''' Home page handler '''
@@ -37,7 +38,8 @@ class MainHandler(webapp2.RequestHandler):
 		''' Show home page '''
         # check if valid Google account
 		user = users.get_current_user()
-
+		data = db.GqlQuery("SELECT * FROM Contact "
+                                   "ORDER BY camera DESC")
 		if user:	# if valid logged in user
 			# logout link
 			url = users.create_logout_url(self.request.uri)
@@ -66,6 +68,7 @@ class MainHandler(webapp2.RequestHandler):
 			'contact': contact,
 			'greeting': greeting,
 			'url': url,
+                        'data': data,
 			'url_linktext': url_linktext
 		}
 
@@ -179,11 +182,6 @@ class GuestMain(webapp2.RequestHandler):
                 self.response.out.write('<html><head> <form method = "LINK" action="/" align="left"><input type ="submit" value = "Home"></form><body>')
                 guestbook_name=self.request.get('guestbook_name'.lower())
 
-    # Ancestor Queries, as shown here, are strongly consistent with the High
-    # Replication Datastore. Queries that span entity groups are eventually
-    # consistent. If we omitted the ancestor from this query there would be a
-    # slight chance that Greeting that had just been written would not show up
-    # in a query.
                 greetings = Greeting.gql("WHERE ANCESTOR IS :1 ORDER BY date DESC LIMIT 10",
                                         guestbook_key(guestbook_name.lower()))
 		for greeting in greetings:
@@ -287,7 +285,7 @@ class layout(webapp2.RequestHandler):
 		self.response.out.write(template.render(template_values))
 
 # main
-#                contact1 = Contact(pid='toh.zijie', name='Toh Zi Jie', purpose='Nil', email='toh.zijie@dhs.sg', class1="5C23", tel1 ='12345678',tel="12345678", camera="None", lens="None", remark = '')
+ #               contact1 = Contact(pid='toh.zijie', name='Toh Zi Jie', purpose='Nil', email='toh.zijie@dhs.sg', class1="5C23", tel1 ='12345678',tel="12345678", camera="None", lens="None", remark = '')
 #                contact1.put()
 #                contact2=Contact(pid='lim.ahseng', name='Lim Ah Seng', purpose='Nil', email='lim.ahseng@dhs.sg', class1="5C99", tel1='12345678', tel='12345678', camera="None", lens="None", remark = '')
 #                contact2.put()                 
