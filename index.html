@@ -2,6 +2,8 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
+			    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes"/>
 		<title>DHShoot!</title>
 		<link rel="stylesheet" href="/static/style.css" />
 		<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
@@ -37,7 +39,7 @@
 				<label><input type ="tel" id="phone" name="tel" placeholder ="For verification" value = "{{ escape }}" /></label>
 				<br/><br/>
 				<label for = "purpose"> Purpose: </label>
-				<label><input type ="text" id="purpose" name="purpose" value = "{{ escape }}" /></label>
+				<label><input type ="text" id="purpose" name="purpose" value = "{{contact.purpose|escape }}" /></label>
 				<br/><br/>
 			<label for="camera">Camera</label>
 			<label><input type = "radio" name="camera" value = "None" /> None</label>

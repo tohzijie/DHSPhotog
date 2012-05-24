@@ -125,8 +125,9 @@ class receipt(webapp2.RequestHandler):
                 lens=contact.lens
                 purpose=contact.purpose
                 remark=contact.remark
-                self.response.out.write('''<!DOCTYPE html><html><title>DHShoot!</title>
-                                                        <body><form method="LINK" action="/"><input type="submit" value="Home">
+                self.response.out.write('''<!DOCTYPE html><html><title>DHShoot!</title><head>
+	    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes"/></head>                                                        <body><form method="LINK" action="/"><input type="submit" value="Home">
 			<p>Name: %s </p>
 			<p>Camera: %s</p>
 			<p>Lens: %s</p>
@@ -179,7 +180,8 @@ def guestbook_key(guestbook_name=None):
 class GuestMain(webapp2.RequestHandler):
         def get(self):
                 user = users.get_current_user()
-                self.response.out.write('<html><head> <form method = "LINK" action="/" align="left"><input type ="submit" value = "Home"></form><body>')
+                self.response.out.write('''<html><head>	    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes"/> <form method = "LINK" action="/" align="left"><input type ="submit" value = "Home"></form><body>''')
                 guestbook_name=self.request.get('guestbook_name'.lower())
 
                 greetings = Greeting.gql("WHERE ANCESTOR IS :1 ORDER BY date DESC LIMIT 10",
@@ -222,6 +224,8 @@ class about(webapp2.RequestHandler):
 		self.response.out.write('''
                                 <!Doctype HTML><html>
 <head>
+	    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta charset="UTF-8">
 </head>
 <body bgcolor=black>
@@ -285,7 +289,7 @@ class layout(webapp2.RequestHandler):
 		self.response.out.write(template.render(template_values))
 
 # main
- #               contact1 = Contact(pid='toh.zijie', name='Toh Zi Jie', purpose='Nil', email='toh.zijie@dhs.sg', class1="5C23", tel1 ='12345678',tel="12345678", camera="None", lens="None", remark = '')
+#                contact1 = Contact(pid='toh.zijie', name='Toh Zi Jie', purpose='Nil', email='toh.zijie@dhs.sg', class1="5C23", tel1 ='12345678',tel="12345678", camera="None", lens="None", remark = '')
 #                contact1.put()
 #                contact2=Contact(pid='lim.ahseng', name='Lim Ah Seng', purpose='Nil', email='lim.ahseng@dhs.sg', class1="5C99", tel1='12345678', tel='12345678', camera="None", lens="None", remark = '')
 #                contact2.put()                 
